@@ -4,7 +4,7 @@
     tools:context="com.sifanghao.weatherforecast.MainActivity"
     android:background="@drawable/biz_plugin_weather_shenzhen_bg">
 
-    <RelativeLayout
+<!--    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="45.0dip"
         android:background="#ffcd2626"
@@ -55,7 +55,11 @@
             android:layout_toLeftOf="@+id/title_share_img"
             android:id="@+id/title_base_img"
             android:src="@drawable/base_action_bar_action_city"/>
-    </RelativeLayout>
+    </RelativeLayout>  -->
+
+    <include
+        android:id="@+id/title_layout"
+        layout="@layout/title_layout" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -172,7 +176,6 @@
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:gravity="left"
-                        android:src="@drawable/biz_plugin_weather_0_50"
                         android:paddingTop="10dip"
                         android:paddingBottom="5dip"/>
 
@@ -214,8 +217,7 @@
             <ImageView
                 android:id="@+id/weatherType_img"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:src="@drawable/biz_plugin_weather_qing"/>
+                android:layout_height="fill_parent" />
 
         </LinearLayout>
 

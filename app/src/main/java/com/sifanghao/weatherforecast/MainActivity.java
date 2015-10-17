@@ -78,11 +78,11 @@ public class MainActivity extends AppCompatActivity {
                                                 public void run() {
                                                     String result;
 
-//                                                    result=(HttpLink.getData("http://wthrcdn.etouch.cn/WeatherApi?citykey=101010100"));
-                                                    result=(HttpLink.getData("http://api.map.baidu.com/telematics/v3/weather?location=%E5%8C%97%E4%BA%AC&output=json&ak=4MBWabuBqXiv1ObsKABSGW8p"));
+                                                    result=(HttpLink.getData("http://wthrcdn.etouch.cn/WeatherApi?citykey=101010100"));
+//                                                    result=(HttpLink.getData("http://api.map.baidu.com/telematics/v3/weather?location=%E5%8C%97%E4%BA%AC&output=json&ak=4MBWabuBqXiv1ObsKABSGW8p"));
                                                     Message msg=new Message();
                                                     msg.what=0;
-                                                    msg.obj= ParseWeatherDataFactory.getParser(ParseWeatherDataFactory.ParserType_JSON).parse(result);
+                                                    msg.obj= ParseWeatherDataFactory.getParser(ParseWeatherDataFactory.ParserType_XML_SAX).parse(result);
                                                     handler.sendMessage(msg);
 
 //                                                SharedPreferences netDate=(SharedPreferences)getSharedPreferences("shared",MODE_PRIVATE);
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         temperature.setText("N/A");
         weatherType.setText("N/A");
 
-        pollutionLevel_img.setImageResource(getResources().getIdentifier("biz_plugin_weather_0_50", "drawable", getApplicationInfo().packageName));
+//        pollutionLevel_img.setImageResource(getResources().getIdentifier("biz_plugin_weather_0_50", "drawable", getApplicationInfo().packageName));
 
 //        Log.e("tupianName", getResources().getResourceName(R.drawable.biz_plugin_weather_baoxue));
 //        Log.e("tupianName", ""+getResources().getIdentifier("biz_plugin_weather_151_200", "drawable", getApplicationInfo().packageName));
@@ -158,7 +158,8 @@ public class MainActivity extends AppCompatActivity {
     }
     private void updateWeatherDate(TodayWeatherData todayWeatherData){
         int i_pm25=new Integer(todayWeatherData.getPm25());
-        String s_weatherType="biz_plugin_weather_"+ ChineseToEnglish.getPingYin(todayWeatherData.getType()).trim();
+        String s_weatherType;
+        int resourceID;//记录天气类型图片资源ID
 //        String s_weatherType="biz_plugin_weather_"+ "baoyu";
         wind.setText(todayWeatherData.getFengxiang());
         city_name.setText(todayWeatherData.getCity()+"天气");
@@ -186,6 +187,16 @@ public class MainActivity extends AppCompatActivity {
             pollutionLevel_img.setImageResource(R.drawable.biz_plugin_weather_greater_300);
 
 //        Log.e("tupianName", s_weatherType);
-//        weatherType_img.setImageResource(getResources().getIdentifier(s_weatherType, "drawable", getApplicationInfo().packageName));
+        if(todayWeatherData.getType().contains("转")){
+            s_weatherType="biz_plugin_weather_"+ ChineseToEnglish.getPingYin(todayWeatherData.getType().split("转")[0]).trim();
+            resourceID=getResources().getIdentifier(s_weatherType, "drawable", getApplicationInfo().packageName); //如果找不到对应的资源，会返回0
+            if(resourceID==0){
+                s_weatherType="biz_plugin_weather_"+ ChineseToEnglish.getPingYin(todayWeatherData.getType().split("转")[1]).trim();
+            }
+        }
+        else{
+            s_weatherType="biz_plugin_weather_"+ ChineseToEnglish.getPingYin(todayWeatherData.getType()).trim();
+        }
+        weatherType_img.setImageResource(getResources().getIdentifier(s_weatherType, "drawable", getApplicationInfo().packageName));
     }
 }
