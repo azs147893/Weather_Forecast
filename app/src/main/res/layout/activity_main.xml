@@ -1,0 +1,278 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.sifanghao.weatherforecast.MainActivity"
+    android:background="@drawable/biz_plugin_weather_shenzhen_bg">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="45.0dip"
+        android:background="#ffcd2626"
+        android:gravity="center_vertical"
+        android:id="@+id/title_layout">
+
+
+
+        <ImageView
+            android:layout_width="45.0dip"
+            android:layout_height="45.0dip"
+            android:id="@+id/title_city_img"
+            android:src="@drawable/title_city"/>
+
+        <ImageView
+            android:layout_width="1.0dip"
+            android:layout_height="40.0dip"
+            android:layout_marginTop="2.0dip"
+            android:id="@+id/seperator_img"
+            android:layout_toRightOf="@id/title_city_img"
+            android:background="#a71717"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/city_name"
+            android:text="北京天气"
+            android:textColor="#ffffffff"
+            android:textSize="22.0sp"
+            android:gravity="center_vertical"
+            android:layout_toRightOf="@id/seperator_img"
+            android:paddingLeft="5.0dip"/>
+
+        <ImageView
+            android:layout_width="45.0dip"
+            android:layout_height="45.0dip"
+            android:layout_alignParentRight="true"
+            android:id="@+id/title_update_img"
+            android:src="@drawable/title_update"/>
+        <ImageView
+            android:layout_width="45.0dip"
+            android:layout_height="45.0dip"
+            android:layout_toLeftOf="@+id/title_update_img"
+            android:id="@+id/title_share_img"
+            android:src="@drawable/title_share"/>
+        <ImageView
+            android:layout_width="45.0dip"
+            android:layout_height="45.0dip"
+            android:layout_toLeftOf="@+id/title_share_img"
+            android:id="@+id/title_base_img"
+            android:src="@drawable/base_action_bar_action_city"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:layout_below="@+id/title_layout">
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+
+        android:id="@+id/middle_layout">
+
+        <LinearLayout
+            android:id="@+id/time_block"
+            android:layout_weight="3"
+            android:layout_height="fill_parent"
+            android:layout_width="0dp"
+            android:background="#00000000"
+            android:orientation="vertical"
+            android:paddingLeft="15.0dp">
+
+            <TextView
+                android:id="@+id/time_block_city_name"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:text="北京"
+                android:textColor="#ffffffff"
+                android:textSize="50.0sp"
+                android:gravity="center_vertical"
+                />
+            <TextView
+                android:id="@+id/time_block_time"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="今天18:25发布"
+                android:textColor="#ffffffff"
+                android:textSize="22.0sp"
+                android:gravity="center_vertical" />
+            <TextView
+                android:id="@+id/time_block_shidu"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="湿度57%"
+                android:textColor="#ffffffff"
+                android:textSize="22.0sp"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_weight="3"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="5.0dip"
+                    android:paddingTop="5.0dip">
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:text="PM2.5"
+                        android:textColor="#ffffffff"
+                        android:textSize="15.0sp"
+                        android:gravity="left"
+                        android:paddingLeft="5.0dip"
+                        android:paddingTop="10dip"/>
+
+                    <TextView
+                        android:id="@+id/pm25"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:text="100"
+                        android:textColor="#ffffffff"
+                        android:textSize="40.0sp"
+                        android:gravity="left"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent">
+
+                    <ImageView
+                        android:id="@+id/pollutionLevel_img"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="left"
+                        android:src="@drawable/biz_plugin_weather_0_50"
+                        android:paddingTop="10dip"
+                        android:paddingBottom="5dip"/>
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:id="@+id/pollutionLevel"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text="重度污染"
+                    android:textColor="#ffffffff"
+                    android:textSize="25.0sp"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:id="@+id/below_layout">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="2">
+
+            <ImageView
+                android:id="@+id/weatherType_img"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:src="@drawable/biz_plugin_weather_qing"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="3"
+            android:orientation="vertical"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/week"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="今天星期三"
+                android:textColor="#ffffffff"
+                android:textSize="20.0sp"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/temperature"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:text="2°C~7°C"
+                android:textColor="#ffffffff"
+                android:textSize="40.0sp"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/weatherType"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="多云转强"
+                android:textColor="#ffffffff"
+                android:textSize="20.0sp"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/wind"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="微风"
+                android:textColor="#ffffffff"
+                android:textSize="20.0sp"
+                android:gravity="center_vertical"/>
+
+        </LinearLayout>
+    </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2">
+
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

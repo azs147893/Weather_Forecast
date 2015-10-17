@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="45.0dip"
+        android:background="#ffcd2626"
+        android:gravity="center_vertical"
+        android:id="@+id/title_layout">
+
+
+
+        <ImageView
+            android:layout_width="45.0dip"
+            android:layout_height="45.0dip"
+            android:id="@+id/title_city_img"
+            android:src="@drawable/title_city"/>
+
+        <ImageView
+            android:layout_width="1.0dip"
+            android:layout_height="40.0dip"
+            android:layout_marginTop="2.0dip"
+            android:id="@+id/seperator_img"
+            android:layout_toRightOf="@id/title_city_img"
+            android:background="#a71717"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/city_name"
+            android:text="北京天气"
+            android:textColor="#ffffffff"
+            android:textSize="22.0sp"
+            android:gravity="center_vertical"
+            android:layout_toRightOf="@id/seperator_img"
+            android:paddingLeft="5.0dip"/>
+
+        <ImageView
+            android:layout_width="45.0dip"
+            android:layout_height="45.0dip"
+            android:layout_alignParentRight="true"
+            android:id="@+id/title_update_img"
+            android:src="@drawable/title_update"/>
+        <ImageView
+            android:layout_width="45.0dip"
+            android:layout_height="45.0dip"
+            android:layout_toLeftOf="@+id/title_update_img"
+            android:id="@+id/title_share_img"
+            android:src="@drawable/title_share"/>
+        <ImageView
+            android:layout_width="45.0dip"
+            android:layout_height="45.0dip"
+            android:layout_toLeftOf="@+id/title_share_img"
+            android:id="@+id/title_base_img"
+            android:src="@drawable/base_action_bar_action_city"/>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">WeatherForecast</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="city">北京</string>
+    <string name="forecastTime">18:25</string>
+    <string name="humidity">57%</string>
+    <string name="pm25">100</string>
+    <string name="pollutionLevel">严重污染</string>
+    <string name="week">星期三</string>
+    <string name="weatherType">多云转晴</string>
+    <string name="low_temperature">-2</string>
+    <string name="high_temperature">7</string>
+    <string name="wind">微风</string>
+</resources>
