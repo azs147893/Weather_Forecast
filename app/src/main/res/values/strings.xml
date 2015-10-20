@@ -14,4 +14,5 @@
     <string name="low_temperature">-2</string>
     <string name="high_temperature">7</string>
     <string name="wind">微风</string>
+    <string name="title_activity_select_city">SelectCityActivity</string>
 </resources>

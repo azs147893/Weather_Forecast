@@ -1,14 +1,11 @@
 package com.sifanghao.weatherforecast;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +16,6 @@ import android.widget.Toast;
 import com.sifanghao.weatherforecast.Tools.ChineseToEnglish;
 import com.sifanghao.weatherforecast.Tools.HttpLink;
 import com.sifanghao.weatherforecast.Tools.NetUtil;
-import com.sifanghao.weatherforecast.Tools.ParseXMLData;
 import com.sifanghao.weatherforecast.beans.TodayWeatherData;
 import com.sifanghao.weatherforecast.factory.ParseWeatherDataFactory;
 
@@ -39,67 +35,62 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView share,
             pollutionLevel_img,
-            weatherType_img;
+            weatherType_img,
+            title_city_img;
 
     private Context context=this;
     private Handler handler;
 
+    private String currentCityNumber;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-                super.onCreate(savedInstanceState);
-                setContentView(R.layout.activity_main);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-                initView();
+        Intent intent=getIntent();
+        currentCityNumber=intent.getStringExtra("currentCityNumber");
+        initView();
+        if(currentCityNumber!=null){
+            getWeatherData(context, currentCityNumber);
+        }
+        else{
+            currentCityNumber= "" + 101010100;//默认北京
+        }
 
-                handler=new Handler() {
+        handler=new Handler() {
                     @Override
                     public void handleMessage(Message msg){
                             switch(msg.what){
                                 case 0:
 //                        SharedPreferences netDate=(SharedPreferences)getSharedPreferences("shared",MODE_PRIVATE);
 //                        Toast.makeText(context,"heihei",Toast.LENGTH_SHORT).show();
-                                    updateWeatherDate((TodayWeatherData)msg.obj);
+                                    updateView((TodayWeatherData) msg.obj);
                                     break;
                         }
 
             }
         };
 
+        title_city_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,SelectCityActivity.class);
+                intent.putExtra("currentCity",city_name.getText());
+                intent.putExtra("currentType",SelectCityActivity.TYPE_PROVINCE);
+                startActivity(intent);
+            }
+        });
 
-
-        share=(ImageView)findViewById(R.id.title_update_img);
         share.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-
-                                        if(NetUtil.getNetWorkState(v.getContext())!=NetUtil.NETWORKSTATE_NONE) {
-                                            new Thread(){
-                                                @Override
-                                                public void run() {
-                                                    String result;
-
-                                                    result=(HttpLink.getData("http://wthrcdn.etouch.cn/WeatherApi?citykey=101010100"));
-//                                                    result=(HttpLink.getData("http://api.map.baidu.com/telematics/v3/weather?location=%E5%8C%97%E4%BA%AC&output=json&ak=4MBWabuBqXiv1ObsKABSGW8p"));
-                                                    Message msg=new Message();
-                                                    msg.what=0;
-                                                    msg.obj= ParseWeatherDataFactory.getParser(ParseWeatherDataFactory.ParserType_XML_SAX).parse(result);
-                                                    handler.sendMessage(msg);
-
-//                                                SharedPreferences netDate=(SharedPreferences)getSharedPreferences("shared",MODE_PRIVATE);
-//                                                SharedPreferences.Editor editor=netDate.edit();
-//                                                editor.putString("netData",result);
-//                                                editor.commit();
-                                                }
-                                            }.start();
-                                        }
-                                        else{
-                                            Toast.makeText(context,"无网络连接，无法更新",Toast.LENGTH_SHORT).show();
-                                        }
-
-
-                                    }
-                                }
+                                     @Override
+                                     public void onClick(View v) {
+                                         getWeatherData(v.getContext(),currentCityNumber);
+                                     }
+                                 }
         );
+
+
     }
 
     @Override
@@ -138,6 +129,8 @@ public class MainActivity extends AppCompatActivity {
 
         pollutionLevel_img=(ImageView)findViewById(R.id.pollutionLevel_img);
         weatherType_img=(ImageView)findViewById(R.id.weatherType_img);
+        title_city_img=(ImageView)findViewById(R.id.title_city_img);
+        share=(ImageView)findViewById(R.id.title_update_img);
 
         wind.setText("N/A");
         city_name.setText("N/A");
@@ -156,8 +149,15 @@ public class MainActivity extends AppCompatActivity {
 //        Log.e("tupianName", ""+getResources().getIdentifier("biz_plugin_weather_151_200", "drawable", getApplicationInfo().packageName));
 
     }
-    private void updateWeatherDate(TodayWeatherData todayWeatherData){
-        int i_pm25=new Integer(todayWeatherData.getPm25());
+
+    private void updateView(TodayWeatherData todayWeatherData){
+        int i_pm25;
+        try{
+            i_pm25=new Integer(todayWeatherData.getPm25());
+        }catch (Exception e){
+            i_pm25=20;
+        }
+
         String s_weatherType;
         int resourceID;//记录天气类型图片资源ID
 //        String s_weatherType="biz_plugin_weather_"+ "baoyu";
@@ -198,5 +198,32 @@ public class MainActivity extends AppCompatActivity {
             s_weatherType="biz_plugin_weather_"+ ChineseToEnglish.getPingYin(todayWeatherData.getType()).trim();
         }
         weatherType_img.setImageResource(getResources().getIdentifier(s_weatherType, "drawable", getApplicationInfo().packageName));
+    }
+
+    private void getWeatherData(Context context,final String cityNum){
+        if(NetUtil.getNetWorkState(context)!=NetUtil.NETWORKSTATE_NONE) {
+            new Thread(){
+                @Override
+                public void run() {
+                    String result;
+
+                    System.out.println("http://wthrcdn.etouch.cn/WeatherApi?citykey="+cityNum);
+                    result=(HttpLink.getData("http://wthrcdn.etouch.cn/WeatherApi?citykey="+cityNum));
+//                                                    result=(HttpLink.getData("http://api.map.baidu.com/telematics/v3/weather?location=%E5%8C%97%E4%BA%AC&output=json&ak=4MBWabuBqXiv1ObsKABSGW8p"));
+                    Message msg=new Message();
+                    msg.what=0;
+                    msg.obj= ParseWeatherDataFactory.getParser(ParseWeatherDataFactory.ParserType_XML_SAX).parse(result);
+                    handler.sendMessage(msg);
+
+//                                                SharedPreferences netDate=(SharedPreferences)getSharedPreferences("shared",MODE_PRIVATE);
+//                                                SharedPreferences.Editor editor=netDate.edit();
+//                                                editor.putString("netData",result);
+//                                                editor.commit();
+                }
+            }.start();
+        }
+        else{
+            Toast.makeText(context,"无网络连接，无法更新",Toast.LENGTH_SHORT).show();
+        }
     }
 }
