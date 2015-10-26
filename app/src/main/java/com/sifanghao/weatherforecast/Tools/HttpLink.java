@@ -31,6 +31,8 @@ public  class HttpLink {
             HttpResponse response = client.execute(request);*/
             URL getUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) getUrl.openConnection();
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(3000);
             connection.connect();
             InputStream im=connection.getInputStream();
 //            im= new GZIPInputStream(im);
@@ -44,9 +46,9 @@ public  class HttpLink {
 //            }
             }
         } catch (Exception e) {
-            System.out.println(e.toString());
+            result.delete(0,result.length());
+            result.append("Failed");
         }
-        System.out.println(result.toString());
         return result.toString();
     }
 }

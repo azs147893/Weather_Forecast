@@ -6,10 +6,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,8 +21,10 @@ import com.sifanghao.weatherforecast.Tools.NetUtil;
 import com.sifanghao.weatherforecast.beans.TodayWeatherData;
 import com.sifanghao.weatherforecast.factory.ParseWeatherDataFactory;
 
+
 public class MainActivity extends AppCompatActivity {
 
+    public static final int INTENT_RESULT_SELECT=1;
     private TextView
             wind ,
             city_name,
@@ -38,10 +42,16 @@ public class MainActivity extends AppCompatActivity {
             weatherType_img,
             title_city_img;
 
+    private ProgressBar update_progressbar;
+
     private Context context=this;
     private Handler handler;
 
     private String currentCityNumber;
+
+    Thread getDataThread=null;
+    Thread chaoShi=null;
+    long getDataThreadStartTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +75,16 @@ public class MainActivity extends AppCompatActivity {
                                 case 0:
 //                        SharedPreferences netDate=(SharedPreferences)getSharedPreferences("shared",MODE_PRIVATE);
 //                        Toast.makeText(context,"heihei",Toast.LENGTH_SHORT).show();
+//                                    if(chaoShi.isAlive())
+//                                        chaoShi.stop();
+                                    update_progressbar.setVisibility(View.INVISIBLE);
+                                    share.setVisibility(View.VISIBLE);
                                     updateView((TodayWeatherData) msg.obj);
+                                    break;
+                                case 1:
+                                    update_progressbar.setVisibility(View.INVISIBLE);
+                                    share.setVisibility(View.VISIBLE);
+                                    Toast.makeText(context,"网络连接超时，无法更新",Toast.LENGTH_SHORT).show();
                                     break;
                         }
 
@@ -78,19 +97,40 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent=new Intent(MainActivity.this,SelectCityActivity.class);
                 intent.putExtra("currentCity",city_name.getText());
                 intent.putExtra("currentType",SelectCityActivity.TYPE_PROVINCE);
-                startActivity(intent);
+                startActivityForResult(intent,INTENT_RESULT_SELECT);
             }
         });
+
 
         share.setOnClickListener(new View.OnClickListener() {
                                      @Override
                                      public void onClick(View v) {
-                                         getWeatherData(v.getContext(),currentCityNumber);
+                                         share.setVisibility(View.INVISIBLE);
+                                         update_progressbar.setVisibility(View.VISIBLE);
+                                         getWeatherData(v.getContext(), currentCityNumber);
                                      }
                                  }
         );
 
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(INTENT_RESULT_SELECT==requestCode){
+            if(RESULT_OK==resultCode) {
+                currentCityNumber=data.getStringExtra("currentCityNumber");
+                if(currentCityNumber!=null){
+                    share.setVisibility(View.INVISIBLE);
+                    update_progressbar.setVisibility(View.VISIBLE);
+                    getWeatherData(context, currentCityNumber);
+                }
+                else{
+                    currentCityNumber= "" + 101010100;//默认北京
+                }
+            }
+        }
     }
 
     @Override
@@ -131,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
         weatherType_img=(ImageView)findViewById(R.id.weatherType_img);
         title_city_img=(ImageView)findViewById(R.id.title_city_img);
         share=(ImageView)findViewById(R.id.title_update_img);
+
+        update_progressbar=(ProgressBar)findViewById(R.id.title_update_progress);
 
         wind.setText("N/A");
         city_name.setText("N/A");
@@ -200,27 +242,49 @@ public class MainActivity extends AppCompatActivity {
         weatherType_img.setImageResource(getResources().getIdentifier(s_weatherType, "drawable", getApplicationInfo().packageName));
     }
 
-    private void getWeatherData(Context context,final String cityNum){
+    private void getWeatherData(Context context, final String cityNum){
         if(NetUtil.getNetWorkState(context)!=NetUtil.NETWORKSTATE_NONE) {
-            new Thread(){
+            getDataThread=new Thread(){
                 @Override
                 public void run() {
-                    String result;
+                    String result=null;
 
-                    System.out.println("http://wthrcdn.etouch.cn/WeatherApi?citykey="+cityNum);
+//                    System.out.println("http://wthrcdn.etouch.cn/WeatherApi?citykey="+cityNum);
                     result=(HttpLink.getData("http://wthrcdn.etouch.cn/WeatherApi?citykey="+cityNum));
 //                                                    result=(HttpLink.getData("http://api.map.baidu.com/telematics/v3/weather?location=%E5%8C%97%E4%BA%AC&output=json&ak=4MBWabuBqXiv1ObsKABSGW8p"));
-                    Message msg=new Message();
-                    msg.what=0;
-                    msg.obj= ParseWeatherDataFactory.getParser(ParseWeatherDataFactory.ParserType_XML_SAX).parse(result);
-                    handler.sendMessage(msg);
+                    if(result.equals("Failed")){
+                        Message msg=new Message();
+                        msg.what=1;
+                        handler.sendMessage(msg);
+                    }
+                    else {
+                        Message msg = new Message();
+                        msg.what = 0;
+                        msg.obj = ParseWeatherDataFactory.getParser(ParseWeatherDataFactory.ParserType_XML_SAX).parse(result);
+                        handler.sendMessage(msg);
+                    }
 
 //                                                SharedPreferences netDate=(SharedPreferences)getSharedPreferences("shared",MODE_PRIVATE);
 //                                                SharedPreferences.Editor editor=netDate.edit();
 //                                                editor.putString("netData",result);
 //                                                editor.commit();
                 }
-            }.start();
+            };
+            getDataThread.start();
+//
+//            chaoShi=new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    long start=System.currentTimeMillis();
+//                    while(System.currentTimeMillis()-start <1);
+//                    Message msg=new Message();
+//                    msg.what=1;
+//                    handler.sendMessage(msg);
+//                }
+//            });
+//            getDataThread.start();
+//            getDataThreadStartTime =System.currentTimeMillis();
+//            chaoShi.start();
         }
         else{
             Toast.makeText(context,"无网络连接，无法更新",Toast.LENGTH_SHORT).show();

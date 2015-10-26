@@ -16,6 +16,7 @@
             android:src="@drawable/title_city"/>
 
         <ImageView
+
             android:layout_width="1.0dip"
             android:layout_height="40.0dip"
             android:layout_marginTop="2.0dip"
@@ -31,14 +32,23 @@
             android:textSize="22.0sp"
             android:gravity="center_vertical"
             android:layout_toRightOf="@id/seperator_img"
-            android:paddingLeft="5.0dip"/>
+            android:paddingLeft="5.0dip" />
+
+    <ProgressBar
+        android:id="@+id/title_update_progress"
+        android:layout_width="45.0dip"
+        android:layout_height="45.0dip"
+        style="@style/title_update_progressbar_style"
+        android:layout_alignParentRight="true"
+        android:visibility="invisible"/>
 
         <ImageView
             android:layout_width="45.0dip"
             android:layout_height="45.0dip"
             android:layout_alignParentRight="true"
             android:id="@+id/title_update_img"
-            android:src="@drawable/title_update"/>
+            android:src="@drawable/title_update"
+            android:visibility="visible"/>
         <ImageView
             android:layout_width="45.0dip"
             android:layout_height="45.0dip"
