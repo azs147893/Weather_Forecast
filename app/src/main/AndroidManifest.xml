@@ -24,6 +24,12 @@
             android:name=".SelectCityActivity"
             android:label="@string/title_activity_select_city" >
         </activity>
+
+        <service
+            android:name=".services.GetWeatherDataService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

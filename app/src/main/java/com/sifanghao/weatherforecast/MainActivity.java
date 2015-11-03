@@ -1,12 +1,15 @@
 package com.sifanghao.weatherforecast;
 
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +23,7 @@ import com.sifanghao.weatherforecast.Tools.HttpLink;
 import com.sifanghao.weatherforecast.Tools.NetUtil;
 import com.sifanghao.weatherforecast.beans.TodayWeatherData;
 import com.sifanghao.weatherforecast.factory.ParseWeatherDataFactory;
+import com.sifanghao.weatherforecast.services.GetWeatherDataService;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -37,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             temperature,
             weatherType;
 
-    private ImageView share,
+    private ImageView update,
             pollutionLevel_img,
             weatherType_img,
             title_city_img;
@@ -50,8 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private String currentCityNumber;
 
     Thread getDataThread=null;
-    Thread chaoShi=null;
-    long getDataThreadStartTime;
+
+    private GetWeatherDataService getWatherDataService;
+    private ServiceConnection sc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,24 +77,37 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void handleMessage(Message msg){
                             switch(msg.what){
-                                case 0:
+                                case GetWeatherDataService.GETWEATHERDATA_SUCCESS:
 //                        SharedPreferences netDate=(SharedPreferences)getSharedPreferences("shared",MODE_PRIVATE);
 //                        Toast.makeText(context,"heihei",Toast.LENGTH_SHORT).show();
 //                                    if(chaoShi.isAlive())
 //                                        chaoShi.stop();
                                     update_progressbar.setVisibility(View.INVISIBLE);
-                                    share.setVisibility(View.VISIBLE);
+                                    update.setVisibility(View.VISIBLE);
                                     updateView((TodayWeatherData) msg.obj);
                                     break;
-                                case 1:
+                                case GetWeatherDataService.GETWEATHERDATA_NETERROR:
                                     update_progressbar.setVisibility(View.INVISIBLE);
-                                    share.setVisibility(View.VISIBLE);
-                                    Toast.makeText(context,"网络连接超时，无法更新",Toast.LENGTH_SHORT).show();
+                                    update.setVisibility(View.VISIBLE);
+                                    Toast.makeText(context,"无网络连接或网络连接超时，无法更新",Toast.LENGTH_SHORT).show();
                                     break;
                         }
 
             }
         };
+
+        sc=new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                getWatherDataService=((GetWeatherDataService.MyIBinder)service).getService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+        bindService(new Intent(MainActivity.this,GetWeatherDataService.class),sc,Context.BIND_AUTO_CREATE);
 
         title_city_img.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,12 +120,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        share.setOnClickListener(new View.OnClickListener() {
+        update.setOnClickListener(new View.OnClickListener() {
                                      @Override
                                      public void onClick(View v) {
-                                         share.setVisibility(View.INVISIBLE);
+                                         update.setVisibility(View.INVISIBLE);
                                          update_progressbar.setVisibility(View.VISIBLE);
-                                         getWeatherData(v.getContext(), currentCityNumber);
+//                                         getWeatherData(v.getContext(), currentCityNumber);
+                                         getWatherDataService.getWeatherData(handler,context,currentCityNumber);
                                      }
                                  }
         );
@@ -122,9 +141,10 @@ public class MainActivity extends AppCompatActivity {
             if(RESULT_OK==resultCode) {
                 currentCityNumber=data.getStringExtra("currentCityNumber");
                 if(currentCityNumber!=null){
-                    share.setVisibility(View.INVISIBLE);
+                    update.setVisibility(View.INVISIBLE);
                     update_progressbar.setVisibility(View.VISIBLE);
-                    getWeatherData(context, currentCityNumber);
+//                    getWeatherData(context, currentCityNumber);
+                    getWatherDataService.getWeatherData(handler,context,currentCityNumber);
                 }
                 else{
                     currentCityNumber= "" + 101010100;//默认北京
@@ -170,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
         pollutionLevel_img=(ImageView)findViewById(R.id.pollutionLevel_img);
         weatherType_img=(ImageView)findViewById(R.id.weatherType_img);
         title_city_img=(ImageView)findViewById(R.id.title_city_img);
-        share=(ImageView)findViewById(R.id.title_update_img);
+        update =(ImageView)findViewById(R.id.title_update_img);
 
         update_progressbar=(ProgressBar)findViewById(R.id.title_update_progress);
 
@@ -287,6 +307,8 @@ public class MainActivity extends AppCompatActivity {
 //            chaoShi.start();
         }
         else{
+            update_progressbar.setVisibility(View.INVISIBLE);
+            update.setVisibility(View.VISIBLE);
             Toast.makeText(context,"无网络连接，无法更新",Toast.LENGTH_SHORT).show();
         }
     }
